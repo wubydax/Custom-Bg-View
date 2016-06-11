@@ -26,15 +26,15 @@ import java.io.InputStream;
 @SuppressWarnings("unused")
 public class CustomBg extends ImageView {
 
-    String URI_KEY = "some_database_key";
-    String OPACITY_KEY = "view_opacity_key";
-    String CROP_KEY = "crop_key";
-    String IMAGE_SWITCH_KEY = "is_color_enabled";
-    String GRADIENT_SWITCH_KEY = "is_gradient_enabled";
-    String COLOR_PRIMARY_KEY = "color_primary_database_key";
-    String COLOR_SECONDARY_KEY = "color_secondary_database_key";
-    String GRADIENT_ORIENTATION_KEY = "gradient_orientation_key";
-    String MASTER_SWITCH_KEY = "is_view_enabled";
+    private String URI_KEY = "some_database_key";
+    private String OPACITY_KEY = "view_opacity_key";
+    private String CROP_KEY = "crop_key";
+    private String COLOR_PRIMARY_KEY = "color_primary_database_key";
+    private String COLOR_SECONDARY_KEY = "color_secondary_database_key";
+    private String GRADIENT_ORIENTATION_KEY = "gradient_orientation_key";
+    private String MASTER_SWITCH_KEY = "is_view_enabled";
+    private String CUSTOM_BG_TYPE = "gear_custom_bg_type"; //added to replace individual switches for bg types. One ListPreference should be enough I think
+    private int mCustomBgType; // takes values 0,1,2 from ListPreference in RC
     private Handler mHandler;
     private CustomViewObserver mCustomViewObserver;
     private Context mContext;
@@ -43,11 +43,8 @@ public class CustomBg extends ImageView {
     private int mOpacity;
     private ScaleType mScaleType;
     private boolean mIsEnabled;
-    private boolean mIsColor;
-    private boolean mIsGradient;
     private int mColorPrimary;
     private int mColorSecondary;
-    private GradientDrawable.Orientation mGradientOrientation;
 
     public CustomBg(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -62,13 +59,11 @@ public class CustomBg extends ImageView {
         String uriString = Settings.System.getString(mContentResolver, URI_KEY);
         mImageUri = uriString != null && !uriString.equals("") ? Uri.parse(uriString) : null;
         mIsEnabled = Settings.System.getInt(mContentResolver, MASTER_SWITCH_KEY, 1) != 0;
-        mIsColor = Settings.System.getInt(mContentResolver, IMAGE_SWITCH_KEY, 1) != 0;
-        mIsGradient = Settings.System.getInt(mContentResolver, GRADIENT_SWITCH_KEY, 1) != 0;
         mOpacity = Settings.System.getInt(mContentResolver, OPACITY_KEY, 255);
         mColorPrimary = Settings.System.getInt(mContentResolver, COLOR_PRIMARY_KEY, Color.WHITE);
         mColorSecondary = Settings.System.getInt(mContentResolver, COLOR_SECONDARY_KEY, Color.CYAN);
         mScaleType = getMyScaleType();
-        mGradientOrientation = getGradientOrientation();
+        mCustomBgType = Settings.System.getInt(mContentResolver, CUSTOM_BG_TYPE, 0);
     }
 
     private ScaleType getMyScaleType() {
@@ -86,25 +81,30 @@ public class CustomBg extends ImageView {
     }
 
     private Drawable getMyDrawable() {
-        Drawable drawable = new ColorDrawable(Color.TRANSPARENT);
-        if (mImageUri != null && mIsEnabled && !mIsColor) {
-            try {
-                InputStream inputStream = mContentResolver.openInputStream(mImageUri);
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        Drawable drawable = new ColorDrawable(Color.TRANSPARENT); //default
+        if(mIsEnabled) {
+            switch (mCustomBgType) {
+                case 0: //Image
+                    if (mImageUri != null) {
+                        try {
+                            InputStream inputStream = mContentResolver.openInputStream(mImageUri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case 1: //Color
+                    drawable = new ColorDrawable(mColorPrimary);
+                    break;
+                case 2: //Gradient
+                    drawable = new GradientDrawable(
+                            getGradientOrientation(),
+                            new int[]{mColorPrimary, mColorSecondary});
+                    ((GradientDrawable) drawable).setCornerRadius(0f);
+                    break;
 
-        } else if (mIsEnabled && mIsColor) {
-            if (!mIsGradient) {
-                drawable = new ColorDrawable(mColorPrimary);
-            } else {
-                GradientDrawable gd = new GradientDrawable(
-                        getGradientOrientation(),
-                        new int[]{mColorPrimary, mColorSecondary});
-                gd.setCornerRadius(0f);
-                drawable = gd;
             }
         }
         return drawable;
@@ -130,10 +130,12 @@ public class CustomBg extends ImageView {
         mContentResolver.registerContentObserver(Settings.System.getUriFor(CROP_KEY), false, mCustomViewObserver);
         mContentResolver.registerContentObserver(Settings.System.getUriFor(OPACITY_KEY), false, mCustomViewObserver);
         mContentResolver.registerContentObserver(Settings.System.getUriFor(COLOR_PRIMARY_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(IMAGE_SWITCH_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(GRADIENT_SWITCH_KEY), false, mCustomViewObserver);
         mContentResolver.registerContentObserver(Settings.System.getUriFor(GRADIENT_ORIENTATION_KEY), false, mCustomViewObserver);
         mContentResolver.registerContentObserver(Settings.System.getUriFor(COLOR_SECONDARY_KEY), false, mCustomViewObserver);
+        mContentResolver.registerContentObserver(Settings.System.getUriFor(URI_KEY), false, mCustomViewObserver);
+        mContentResolver.registerContentObserver(Settings.System.getUriFor(CUSTOM_BG_TYPE), false, mCustomViewObserver);
+
+
     }
 
     @Override
@@ -157,6 +159,7 @@ public class CustomBg extends ImageView {
                 return GradientDrawable.Orientation.TOP_BOTTOM;
         }
     }
+
 
 
     private class CustomViewObserver extends ContentObserver {

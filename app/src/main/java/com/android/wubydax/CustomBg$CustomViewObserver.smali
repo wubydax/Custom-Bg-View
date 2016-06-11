@@ -24,13 +24,13 @@
     .param p2, "handler"    # Landroid/os/Handler;
 
     .prologue
-    .line 164
+    .line 167
     iput-object p1, p0, Lcom/android/wubydax/CustomBg$CustomViewObserver;->this$0:Lcom/android/wubydax/CustomBg;
 
-    .line 165
+    .line 168
     invoke-direct {p0, p2}, Landroid/database/ContentObserver;-><init>(Landroid/os/Handler;)V
 
-    .line 166
+    .line 169
     return-void
 .end method
 
@@ -40,7 +40,7 @@
     .registers 2
 
     .prologue
-    .line 170
+    .line 173
     const/4 v0, 0x1
 
     return v0
@@ -52,21 +52,21 @@
     .param p2, "uri"    # Landroid/net/Uri;
 
     .prologue
-    .line 175
+    .line 178
     invoke-super {p0, p1, p2}, Landroid/database/ContentObserver;->onChange(ZLandroid/net/Uri;)V
 
-    .line 176
+    .line 179
     iget-object v0, p0, Lcom/android/wubydax/CustomBg$CustomViewObserver;->this$0:Lcom/android/wubydax/CustomBg;
 
     # invokes: Lcom/android/wubydax/CustomBg;->initValues()V
     invoke-static {v0}, Lcom/android/wubydax/CustomBg;->access$000(Lcom/android/wubydax/CustomBg;)V
 
-    .line 177
+    .line 180
     iget-object v0, p0, Lcom/android/wubydax/CustomBg$CustomViewObserver;->this$0:Lcom/android/wubydax/CustomBg;
 
     # invokes: Lcom/android/wubydax/CustomBg;->initView()V
     invoke-static {v0}, Lcom/android/wubydax/CustomBg;->access$100(Lcom/android/wubydax/CustomBg;)V
 
-    .line 178
+    .line 181
     return-void
 .end method
