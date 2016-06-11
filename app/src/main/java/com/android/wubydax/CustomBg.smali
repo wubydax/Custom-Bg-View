@@ -62,37 +62,37 @@
     invoke-direct {p0, p1, p2}, Landroid/widget/ImageView;-><init>(Landroid/content/Context;Landroid/util/AttributeSet;)V
 
     .line 29
-    const-string v0, "some_database_key"
+    const-string v0, "incallui_bg"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->URI_KEY:Ljava/lang/String;
 
     .line 30
-    const-string v0, "view_opacity_key"
+    const-string v0, "gear_bg_opacity"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->OPACITY_KEY:Ljava/lang/String;
 
     .line 31
-    const-string v0, "crop_key"
+    const-string v0, "gear_bg_crop_type"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->CROP_KEY:Ljava/lang/String;
 
     .line 32
-    const-string v0, "color_primary_database_key"
+    const-string v0, "gear_bg_primary_color"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->COLOR_PRIMARY_KEY:Ljava/lang/String;
 
     .line 33
-    const-string v0, "color_secondary_database_key"
+    const-string v0, "gear_second_gradient_color"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->COLOR_SECONDARY_KEY:Ljava/lang/String;
 
     .line 34
-    const-string v0, "gradient_orientation_key"
+    const-string v0, "gear_bg_gradient_orientation"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->GRADIENT_ORIENTATION_KEY:Ljava/lang/String;
 
     .line 35
-    const-string v0, "is_view_enabled"
+    const-string v0, "enable_gear_custom_bg"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->MASTER_SWITCH_KEY:Ljava/lang/String;
 

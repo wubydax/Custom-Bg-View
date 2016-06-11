@@ -26,13 +26,13 @@ import java.io.InputStream;
 @SuppressWarnings("unused")
 public class CustomBg extends ImageView {
 
-    private String URI_KEY = "some_database_key";
-    private String OPACITY_KEY = "view_opacity_key";
-    private String CROP_KEY = "crop_key";
-    private String COLOR_PRIMARY_KEY = "color_primary_database_key";
-    private String COLOR_SECONDARY_KEY = "color_secondary_database_key";
-    private String GRADIENT_ORIENTATION_KEY = "gradient_orientation_key";
-    private String MASTER_SWITCH_KEY = "is_view_enabled";
+    private String URI_KEY = "incallui_bg";
+    private String OPACITY_KEY = "gear_bg_opacity";
+    private String CROP_KEY = "gear_bg_crop_type";
+    private String COLOR_PRIMARY_KEY = "gear_bg_primary_color";
+    private String COLOR_SECONDARY_KEY = "gear_second_gradient_color";
+    private String GRADIENT_ORIENTATION_KEY = "gear_bg_gradient_orientation";
+    private String MASTER_SWITCH_KEY = "enable_gear_custom_bg";
     private String CUSTOM_BG_TYPE = "gear_custom_bg_type"; //added to replace individual switches for bg types. One ListPreference should be enough I think
     private int mCustomBgType; // takes values 0,1,2 from ListPreference in RC
     private Handler mHandler;
