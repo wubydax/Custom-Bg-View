@@ -2,7 +2,6 @@ package com.android.wubydax;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -11,9 +10,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.FileNotFoundException;
@@ -23,10 +22,10 @@ import java.io.InputStream;
  * Created by Roberto Mariani & Anna Berkovitch on 09/06/2016.
  * Custom View for background...
  */
-@SuppressWarnings("unused")
 public class CustomBg extends ImageView {
 
-    private String URI_KEY = "incallui_bg";
+    private static final String LOG_TAG = "daxgirl";
+    private String URI_KEY = "gear_bg_image_uri";
     private String OPACITY_KEY = "gear_bg_opacity";
     private String CROP_KEY = "gear_bg_crop_type";
     private String COLOR_PRIMARY_KEY = "gear_bg_primary_color";
@@ -35,27 +34,25 @@ public class CustomBg extends ImageView {
     private String MASTER_SWITCH_KEY = "enable_gear_custom_bg";
     private String CUSTOM_BG_TYPE = "gear_custom_bg_type"; //added to replace individual switches for bg types. One ListPreference should be enough I think
     private int mCustomBgType; // takes values 0,1,2 from ListPreference in RC
-    private Handler mHandler;
-    private CustomViewObserver mCustomViewObserver;
     private Context mContext;
     private ContentResolver mContentResolver;
-    private Uri mImageUri;
+    private Uri mImageUri, mOldUri;
     private int mOpacity;
     private ScaleType mScaleType;
     private boolean mIsEnabled;
     private int mColorPrimary;
     private int mColorSecondary;
+    private Drawable mDrawable;
+
 
     public CustomBg(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mHandler = new Handler();
-        mCustomViewObserver = new CustomViewObserver(mHandler);
         mContext = context;
         mContentResolver = context.getContentResolver();
-        initValues();
     }
 
     private void initValues() {
+        mOldUri = mImageUri;
         String uriString = Settings.System.getString(mContentResolver, URI_KEY);
         mImageUri = uriString != null && !uriString.equals("") ? Uri.parse(uriString) : null;
         mIsEnabled = Settings.System.getInt(mContentResolver, MASTER_SWITCH_KEY, 1) != 0;
@@ -82,17 +79,23 @@ public class CustomBg extends ImageView {
 
     private Drawable getMyDrawable() {
         Drawable drawable = new ColorDrawable(Color.TRANSPARENT); //default
-        if(mIsEnabled) {
+        if (mIsEnabled) {
             switch (mCustomBgType) {
                 case 0: //Image
-                    if (mImageUri != null) {
+                    Log.d(LOG_TAG, "getMyDrawable image is selected");
+                    if (mImageUri != null && !mImageUri.equals(mOldUri)) {
                         try {
+                            Log.d(LOG_TAG, "getMyDrawable getting image");
                             InputStream inputStream = mContentResolver.openInputStream(mImageUri);
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                            mDrawable = drawable;
                         } catch (FileNotFoundException e) {
+                            Log.d(LOG_TAG, "getMyDrawable exception: file not found");
                             e.printStackTrace();
                         }
+                    } else {
+                        drawable = mDrawable;
                     }
                     break;
                 case 1: //Color
@@ -111,9 +114,12 @@ public class CustomBg extends ImageView {
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        initView();
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (hasWindowFocus && getVisibility() == VISIBLE) {
+            initValues();
+            initView();
+        }
     }
 
     private void initView() {
@@ -123,28 +129,8 @@ public class CustomBg extends ImageView {
         setScaleType(mScaleType);
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(MASTER_SWITCH_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(CROP_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(OPACITY_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(COLOR_PRIMARY_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(GRADIENT_ORIENTATION_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(COLOR_SECONDARY_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(URI_KEY), false, mCustomViewObserver);
-        mContentResolver.registerContentObserver(Settings.System.getUriFor(CUSTOM_BG_TYPE), false, mCustomViewObserver);
 
-
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mContentResolver.unregisterContentObserver(mCustomViewObserver);
-    }
-
-    public GradientDrawable.Orientation getGradientOrientation() {
+    private GradientDrawable.Orientation getGradientOrientation() {
         int orientation = Settings.System.getInt(mContentResolver, GRADIENT_ORIENTATION_KEY, 0);
         switch (orientation) {
             case 0:
@@ -161,23 +147,4 @@ public class CustomBg extends ImageView {
     }
 
 
-
-    private class CustomViewObserver extends ContentObserver {
-
-        public CustomViewObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public boolean deliverSelfNotifications() {
-            return true;
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            super.onChange(selfChange, uri);
-            initValues();
-            initView();
-        }
-    }
 }

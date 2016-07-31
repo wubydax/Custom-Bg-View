@@ -3,12 +3,8 @@
 .source "CustomBg.java"
 
 
-# annotations
-.annotation system Ldalvik/annotation/MemberClasses;
-    value = {
-        Lcom/android/wubydax/CustomBg$CustomViewObserver;
-    }
-.end annotation
+# static fields
+.field private static final LOG_TAG:Ljava/lang/String; = "daxgirl"
 
 
 # instance fields
@@ -38,13 +34,13 @@
 
 .field private mCustomBgType:I
 
-.field private mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-.field private mHandler:Landroid/os/Handler;
+.field private mDrawable:Landroid/graphics/drawable/Drawable;
 
 .field private mImageUri:Landroid/net/Uri;
 
 .field private mIsEnabled:Z
+
+.field private mOldUri:Landroid/net/Uri;
 
 .field private mOpacity:I
 
@@ -53,107 +49,127 @@
 
 # direct methods
 .method public constructor <init>(Landroid/content/Context;Landroid/util/AttributeSet;)V
-    .registers 5
+    .registers 4
     .param p1, "context"    # Landroid/content/Context;
     .param p2, "attrs"    # Landroid/util/AttributeSet;
 
     .prologue
-    .line 50
+    .line 49
     invoke-direct {p0, p1, p2}, Landroid/widget/ImageView;-><init>(Landroid/content/Context;Landroid/util/AttributeSet;)V
 
-    .line 29
-    const-string v0, "incallui_bg"
+    .line 28
+    const-string v0, "gear_bg_image_uri"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->URI_KEY:Ljava/lang/String;
 
-    .line 30
+    .line 29
     const-string v0, "gear_bg_opacity"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->OPACITY_KEY:Ljava/lang/String;
 
-    .line 31
+    .line 30
     const-string v0, "gear_bg_crop_type"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->CROP_KEY:Ljava/lang/String;
 
-    .line 32
+    .line 31
     const-string v0, "gear_bg_primary_color"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->COLOR_PRIMARY_KEY:Ljava/lang/String;
 
-    .line 33
+    .line 32
     const-string v0, "gear_second_gradient_color"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->COLOR_SECONDARY_KEY:Ljava/lang/String;
 
-    .line 34
+    .line 33
     const-string v0, "gear_bg_gradient_orientation"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->GRADIENT_ORIENTATION_KEY:Ljava/lang/String;
 
-    .line 35
+    .line 34
     const-string v0, "enable_gear_custom_bg"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->MASTER_SWITCH_KEY:Ljava/lang/String;
 
-    .line 36
+    .line 35
     const-string v0, "gear_custom_bg_type"
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->CUSTOM_BG_TYPE:Ljava/lang/String;
 
-    .line 51
-    new-instance v0, Landroid/os/Handler;
-
-    invoke-direct {v0}, Landroid/os/Handler;-><init>()V
-
-    iput-object v0, p0, Lcom/android/wubydax/CustomBg;->mHandler:Landroid/os/Handler;
-
-    .line 52
-    new-instance v0, Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mHandler:Landroid/os/Handler;
-
-    invoke-direct {v0, p0, v1}, Lcom/android/wubydax/CustomBg$CustomViewObserver;-><init>(Lcom/android/wubydax/CustomBg;Landroid/os/Handler;)V
-
-    iput-object v0, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    .line 53
+    .line 50
     iput-object p1, p0, Lcom/android/wubydax/CustomBg;->mContext:Landroid/content/Context;
 
-    .line 54
+    .line 51
     invoke-virtual {p1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
 
     move-result-object v0
 
     iput-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
-    .line 55
-    invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->initValues()V
-
-    .line 56
+    .line 52
     return-void
 .end method
 
-.method static synthetic access$000(Lcom/android/wubydax/CustomBg;)V
-    .registers 1
-    .param p0, "x0"    # Lcom/android/wubydax/CustomBg;
+.method private getGradientOrientation()Landroid/graphics/drawable/GradientDrawable$Orientation;
+    .registers 5
 
     .prologue
-    .line 27
-    invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->initValues()V
+    .line 134
+    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
-    return-void
-.end method
+    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->GRADIENT_ORIENTATION_KEY:Ljava/lang/String;
 
-.method static synthetic access$100(Lcom/android/wubydax/CustomBg;)V
-    .registers 1
-    .param p0, "x0"    # Lcom/android/wubydax/CustomBg;
+    const/4 v3, 0x0
 
-    .prologue
-    .line 27
-    invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->initView()V
+    invoke-static {v1, v2, v3}, Landroid/provider/Settings$System;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
 
-    return-void
+    move-result v0
+
+    .line 135
+    .local v0, "orientation":I
+    packed-switch v0, :pswitch_data_1c
+
+    .line 145
+    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->TOP_BOTTOM:Landroid/graphics/drawable/GradientDrawable$Orientation;
+
+    :goto_e
+    return-object v1
+
+    .line 137
+    :pswitch_f
+    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->TOP_BOTTOM:Landroid/graphics/drawable/GradientDrawable$Orientation;
+
+    goto :goto_e
+
+    .line 139
+    :pswitch_12
+    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->BOTTOM_TOP:Landroid/graphics/drawable/GradientDrawable$Orientation;
+
+    goto :goto_e
+
+    .line 141
+    :pswitch_15
+    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->LEFT_RIGHT:Landroid/graphics/drawable/GradientDrawable$Orientation;
+
+    goto :goto_e
+
+    .line 143
+    :pswitch_18
+    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->RIGHT_LEFT:Landroid/graphics/drawable/GradientDrawable$Orientation;
+
+    goto :goto_e
+
+    .line 135
+    nop
+
+    :pswitch_data_1c
+    .packed-switch 0x0
+        :pswitch_f
+        :pswitch_12
+        :pswitch_15
+        :pswitch_18
+    .end packed-switch
 .end method
 
 .method private getMyDrawable()Landroid/graphics/drawable/Drawable;
@@ -162,35 +178,59 @@
     .prologue
     const/4 v8, 0x0
 
-    .line 84
+    .line 81
     new-instance v1, Landroid/graphics/drawable/ColorDrawable;
 
     invoke-direct {v1, v8}, Landroid/graphics/drawable/ColorDrawable;-><init>(I)V
 
-    .line 85
+    .line 82
     .local v1, "drawable":Landroid/graphics/drawable/Drawable;
     iget-boolean v5, p0, Lcom/android/wubydax/CustomBg;->mIsEnabled:Z
 
     if-eqz v5, :cond_f
 
-    .line 86
+    .line 83
     iget v5, p0, Lcom/android/wubydax/CustomBg;->mCustomBgType:I
 
-    packed-switch v5, :pswitch_data_58
+    packed-switch v5, :pswitch_data_7e
 
-    .line 110
+    .line 113
     :cond_f
     :goto_f
     return-object v1
 
-    .line 88
+    .line 85
     :pswitch_10
+    const-string v5, "daxgirl"
+
+    const-string v6, "getMyDrawable image is selected"
+
+    invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 86
     iget-object v5, p0, Lcom/android/wubydax/CustomBg;->mImageUri:Landroid/net/Uri;
 
-    if-eqz v5, :cond_f
+    if-eqz v5, :cond_53
 
-    .line 90
-    :try_start_14
+    iget-object v5, p0, Lcom/android/wubydax/CustomBg;->mImageUri:Landroid/net/Uri;
+
+    iget-object v6, p0, Lcom/android/wubydax/CustomBg;->mOldUri:Landroid/net/Uri;
+
+    invoke-virtual {v5, v6}, Landroid/net/Uri;->equals(Ljava/lang/Object;)Z
+
+    move-result v5
+
+    if-nez v5, :cond_53
+
+    .line 88
+    :try_start_25
+    const-string v5, "daxgirl"
+
+    const-string v6, "getMyDrawable getting image"
+
+    invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 89
     iget-object v5, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v6, p0, Lcom/android/wubydax/CustomBg;->mImageUri:Landroid/net/Uri;
@@ -199,13 +239,13 @@
 
     move-result-object v4
 
-    .line 91
+    .line 90
     .local v4, "inputStream":Ljava/io/InputStream;
     invoke-static {v4}, Landroid/graphics/BitmapFactory;->decodeStream(Ljava/io/InputStream;)Landroid/graphics/Bitmap;
 
     move-result-object v0
 
-    .line 92
+    .line 91
     .local v0, "bitmap":Landroid/graphics/Bitmap;
     new-instance v2, Landroid/graphics/drawable/BitmapDrawable;
 
@@ -216,14 +256,20 @@
     move-result-object v5
 
     invoke-direct {v2, v5, v0}, Landroid/graphics/drawable/BitmapDrawable;-><init>(Landroid/content/res/Resources;Landroid/graphics/Bitmap;)V
-    :try_end_2b
-    .catch Ljava/io/FileNotFoundException; {:try_start_14 .. :try_end_2b} :catch_2d
+    :try_end_43
+    .catch Ljava/io/FileNotFoundException; {:try_start_25 .. :try_end_43} :catch_47
 
+    .line 92
     .end local v1    # "drawable":Landroid/graphics/drawable/Drawable;
     .local v2, "drawable":Landroid/graphics/drawable/Drawable;
+    :try_start_43
+    iput-object v2, p0, Lcom/android/wubydax/CustomBg;->mDrawable:Landroid/graphics/drawable/Drawable;
+    :try_end_45
+    .catch Ljava/io/FileNotFoundException; {:try_start_43 .. :try_end_45} :catch_7b
+
     move-object v1, v2
 
-    .line 95
+    .line 96
     .end local v2    # "drawable":Landroid/graphics/drawable/Drawable;
     .restart local v1    # "drawable":Landroid/graphics/drawable/Drawable;
     goto :goto_f
@@ -231,18 +277,33 @@
     .line 93
     .end local v0    # "bitmap":Landroid/graphics/Bitmap;
     .end local v4    # "inputStream":Ljava/io/InputStream;
-    :catch_2d
+    :catch_47
     move-exception v3
 
     .line 94
     .local v3, "e":Ljava/io/FileNotFoundException;
+    :goto_48
+    const-string v5, "daxgirl"
+
+    const-string v6, "getMyDrawable exception: file not found"
+
+    invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 95
     invoke-virtual {v3}, Ljava/io/FileNotFoundException;->printStackTrace()V
 
     goto :goto_f
 
-    .line 99
+    .line 98
     .end local v3    # "e":Ljava/io/FileNotFoundException;
-    :pswitch_32
+    :cond_53
+    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mDrawable:Landroid/graphics/drawable/Drawable;
+
+    .line 100
+    goto :goto_f
+
+    .line 102
+    :pswitch_56
     new-instance v1, Landroid/graphics/drawable/ColorDrawable;
 
     .end local v1    # "drawable":Landroid/graphics/drawable/Drawable;
@@ -250,17 +311,17 @@
 
     invoke-direct {v1, v5}, Landroid/graphics/drawable/ColorDrawable;-><init>(I)V
 
-    .line 100
+    .line 103
     .restart local v1    # "drawable":Landroid/graphics/drawable/Drawable;
     goto :goto_f
 
-    .line 102
-    :pswitch_3a
+    .line 105
+    :pswitch_5e
     new-instance v1, Landroid/graphics/drawable/GradientDrawable;
 
-    .line 103
+    .line 106
     .end local v1    # "drawable":Landroid/graphics/drawable/Drawable;
-    invoke-virtual {p0}, Lcom/android/wubydax/CustomBg;->getGradientOrientation()Landroid/graphics/drawable/GradientDrawable$Orientation;
+    invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->getGradientOrientation()Landroid/graphics/drawable/GradientDrawable$Orientation;
 
     move-result-object v5
 
@@ -283,7 +344,7 @@
     .restart local v1    # "drawable":Landroid/graphics/drawable/Drawable;
     move-object v5, v1
 
-    .line 105
+    .line 108
     check-cast v5, Landroid/graphics/drawable/GradientDrawable;
 
     const/4 v6, 0x0
@@ -292,14 +353,26 @@
 
     goto :goto_f
 
-    .line 86
-    nop
+    .line 93
+    .end local v1    # "drawable":Landroid/graphics/drawable/Drawable;
+    .restart local v0    # "bitmap":Landroid/graphics/Bitmap;
+    .restart local v2    # "drawable":Landroid/graphics/drawable/Drawable;
+    .restart local v4    # "inputStream":Ljava/io/InputStream;
+    :catch_7b
+    move-exception v3
 
-    :pswitch_data_58
+    move-object v1, v2
+
+    .end local v2    # "drawable":Landroid/graphics/drawable/Drawable;
+    .restart local v1    # "drawable":Landroid/graphics/drawable/Drawable;
+    goto :goto_48
+
+    .line 83
+    :pswitch_data_7e
     .packed-switch 0x0
         :pswitch_10
-        :pswitch_32
-        :pswitch_3a
+        :pswitch_56
+        :pswitch_5e
     .end packed-switch
 .end method
 
@@ -307,7 +380,7 @@
     .registers 5
 
     .prologue
-    .line 70
+    .line 67
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v2, p0, Lcom/android/wubydax/CustomBg;->CROP_KEY:Ljava/lang/String;
@@ -318,35 +391,35 @@
 
     move-result v0
 
-    .line 71
+    .line 68
     .local v0, "scaleType":I
     packed-switch v0, :pswitch_data_18
 
-    .line 79
+    .line 76
     sget-object v1, Landroid/widget/ImageView$ScaleType;->CENTER_CROP:Landroid/widget/ImageView$ScaleType;
 
     :goto_e
     return-object v1
 
-    .line 73
+    .line 70
     :pswitch_f
     sget-object v1, Landroid/widget/ImageView$ScaleType;->CENTER_CROP:Landroid/widget/ImageView$ScaleType;
 
     goto :goto_e
 
-    .line 75
+    .line 72
     :pswitch_12
     sget-object v1, Landroid/widget/ImageView$ScaleType;->CENTER_INSIDE:Landroid/widget/ImageView$ScaleType;
 
     goto :goto_e
 
-    .line 77
+    .line 74
     :pswitch_15
     sget-object v1, Landroid/widget/ImageView$ScaleType;->FIT_XY:Landroid/widget/ImageView$ScaleType;
 
     goto :goto_e
 
-    .line 71
+    .line 68
     :pswitch_data_18
     .packed-switch 0x0
         :pswitch_f
@@ -363,7 +436,12 @@
 
     const/4 v3, 0x0
 
-    .line 59
+    .line 55
+    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mImageUri:Landroid/net/Uri;
+
+    iput-object v1, p0, Lcom/android/wubydax/CustomBg;->mOldUri:Landroid/net/Uri;
+
+    .line 56
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v4, p0, Lcom/android/wubydax/CustomBg;->URI_KEY:Ljava/lang/String;
@@ -372,9 +450,9 @@
 
     move-result-object v0
 
-    .line 60
+    .line 57
     .local v0, "uriString":Ljava/lang/String;
-    if-eqz v0, :cond_5c
+    if-eqz v0, :cond_60
 
     const-string v1, ""
 
@@ -382,16 +460,16 @@
 
     move-result v1
 
-    if-nez v1, :cond_5c
+    if-nez v1, :cond_60
 
     invoke-static {v0}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
 
     move-result-object v1
 
-    :goto_18
+    :goto_1c
     iput-object v1, p0, Lcom/android/wubydax/CustomBg;->mImageUri:Landroid/net/Uri;
 
-    .line 61
+    .line 58
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v4, p0, Lcom/android/wubydax/CustomBg;->MASTER_SWITCH_KEY:Ljava/lang/String;
@@ -400,14 +478,14 @@
 
     move-result v1
 
-    if-eqz v1, :cond_5e
+    if-eqz v1, :cond_62
 
     move v1, v2
 
-    :goto_25
+    :goto_29
     iput-boolean v1, p0, Lcom/android/wubydax/CustomBg;->mIsEnabled:Z
 
-    .line 62
+    .line 59
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v2, p0, Lcom/android/wubydax/CustomBg;->OPACITY_KEY:Ljava/lang/String;
@@ -420,7 +498,7 @@
 
     iput v1, p0, Lcom/android/wubydax/CustomBg;->mOpacity:I
 
-    .line 63
+    .line 60
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v2, p0, Lcom/android/wubydax/CustomBg;->COLOR_PRIMARY_KEY:Ljava/lang/String;
@@ -433,7 +511,7 @@
 
     iput v1, p0, Lcom/android/wubydax/CustomBg;->mColorPrimary:I
 
-    .line 64
+    .line 61
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v2, p0, Lcom/android/wubydax/CustomBg;->COLOR_SECONDARY_KEY:Ljava/lang/String;
@@ -446,14 +524,14 @@
 
     iput v1, p0, Lcom/android/wubydax/CustomBg;->mColorSecondary:I
 
-    .line 65
+    .line 62
     invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->getMyScaleType()Landroid/widget/ImageView$ScaleType;
 
     move-result-object v1
 
     iput-object v1, p0, Lcom/android/wubydax/CustomBg;->mScaleType:Landroid/widget/ImageView$ScaleType;
 
-    .line 66
+    .line 63
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
 
     iget-object v2, p0, Lcom/android/wubydax/CustomBg;->CUSTOM_BG_TYPE:Ljava/lang/String;
@@ -464,257 +542,75 @@
 
     iput v1, p0, Lcom/android/wubydax/CustomBg;->mCustomBgType:I
 
-    .line 67
+    .line 64
     return-void
 
-    .line 60
-    :cond_5c
+    .line 57
+    :cond_60
     const/4 v1, 0x0
 
-    goto :goto_18
+    goto :goto_1c
 
-    :cond_5e
+    :cond_62
     move v1, v3
 
-    .line 61
-    goto :goto_25
+    .line 58
+    goto :goto_29
 .end method
 
 .method private initView()V
     .registers 3
 
     .prologue
-    .line 120
+    .line 126
     invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->getMyDrawable()Landroid/graphics/drawable/Drawable;
 
     move-result-object v0
 
-    .line 121
+    .line 127
     .local v0, "drawable":Landroid/graphics/drawable/Drawable;
     iget v1, p0, Lcom/android/wubydax/CustomBg;->mOpacity:I
 
     invoke-virtual {v0, v1}, Landroid/graphics/drawable/Drawable;->setAlpha(I)V
 
-    .line 122
+    .line 128
     invoke-virtual {p0, v0}, Lcom/android/wubydax/CustomBg;->setImageDrawable(Landroid/graphics/drawable/Drawable;)V
 
-    .line 123
+    .line 129
     iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mScaleType:Landroid/widget/ImageView$ScaleType;
 
     invoke-virtual {p0, v1}, Lcom/android/wubydax/CustomBg;->setScaleType(Landroid/widget/ImageView$ScaleType;)V
 
-    .line 124
+    .line 130
     return-void
 .end method
 
 
 # virtual methods
-.method public getGradientOrientation()Landroid/graphics/drawable/GradientDrawable$Orientation;
-    .registers 5
+.method public onWindowFocusChanged(Z)V
+    .registers 3
+    .param p1, "hasWindowFocus"    # Z
 
     .prologue
-    .line 148
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
+    .line 118
+    invoke-super {p0, p1}, Landroid/widget/ImageView;->onWindowFocusChanged(Z)V
 
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->GRADIENT_ORIENTATION_KEY:Ljava/lang/String;
+    .line 119
+    if-eqz p1, :cond_11
 
-    const/4 v3, 0x0
-
-    invoke-static {v1, v2, v3}, Landroid/provider/Settings$System;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+    invoke-virtual {p0}, Lcom/android/wubydax/CustomBg;->getVisibility()I
 
     move-result v0
 
-    .line 149
-    .local v0, "orientation":I
-    packed-switch v0, :pswitch_data_1c
+    if-nez v0, :cond_11
 
-    .line 159
-    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->TOP_BOTTOM:Landroid/graphics/drawable/GradientDrawable$Orientation;
+    .line 120
+    invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->initValues()V
 
-    :goto_e
-    return-object v1
-
-    .line 151
-    :pswitch_f
-    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->TOP_BOTTOM:Landroid/graphics/drawable/GradientDrawable$Orientation;
-
-    goto :goto_e
-
-    .line 153
-    :pswitch_12
-    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->BOTTOM_TOP:Landroid/graphics/drawable/GradientDrawable$Orientation;
-
-    goto :goto_e
-
-    .line 155
-    :pswitch_15
-    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->LEFT_RIGHT:Landroid/graphics/drawable/GradientDrawable$Orientation;
-
-    goto :goto_e
-
-    .line 157
-    :pswitch_18
-    sget-object v1, Landroid/graphics/drawable/GradientDrawable$Orientation;->RIGHT_LEFT:Landroid/graphics/drawable/GradientDrawable$Orientation;
-
-    goto :goto_e
-
-    .line 149
-    nop
-
-    :pswitch_data_1c
-    .packed-switch 0x0
-        :pswitch_f
-        :pswitch_12
-        :pswitch_15
-        :pswitch_18
-    .end packed-switch
-.end method
-
-.method protected onAttachedToWindow()V
-    .registers 5
-
-    .prologue
-    const/4 v3, 0x0
-
-    .line 128
-    invoke-super {p0}, Landroid/widget/ImageView;->onAttachedToWindow()V
-
-    .line 129
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->MASTER_SWITCH_KEY:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 130
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->CROP_KEY:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 131
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->OPACITY_KEY:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 132
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->COLOR_PRIMARY_KEY:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 133
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->GRADIENT_ORIENTATION_KEY:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 134
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->COLOR_SECONDARY_KEY:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 135
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->URI_KEY:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 136
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->CUSTOM_BG_TYPE:Ljava/lang/String;
-
-    invoke-static {v1}, Landroid/provider/Settings$System;->getUriFor(Ljava/lang/String;)Landroid/net/Uri;
-
-    move-result-object v1
-
-    iget-object v2, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1, v3, v2}, Landroid/content/ContentResolver;->registerContentObserver(Landroid/net/Uri;ZLandroid/database/ContentObserver;)V
-
-    .line 139
-    return-void
-.end method
-
-.method protected onDetachedFromWindow()V
-    .registers 3
-
-    .prologue
-    .line 143
-    invoke-super {p0}, Landroid/widget/ImageView;->onDetachedFromWindow()V
-
-    .line 144
-    iget-object v0, p0, Lcom/android/wubydax/CustomBg;->mContentResolver:Landroid/content/ContentResolver;
-
-    iget-object v1, p0, Lcom/android/wubydax/CustomBg;->mCustomViewObserver:Lcom/android/wubydax/CustomBg$CustomViewObserver;
-
-    invoke-virtual {v0, v1}, Landroid/content/ContentResolver;->unregisterContentObserver(Landroid/database/ContentObserver;)V
-
-    .line 145
-    return-void
-.end method
-
-.method protected onFinishInflate()V
-    .registers 1
-
-    .prologue
-    .line 115
-    invoke-super {p0}, Landroid/widget/ImageView;->onFinishInflate()V
-
-    .line 116
+    .line 121
     invoke-direct {p0}, Lcom/android/wubydax/CustomBg;->initView()V
 
-    .line 117
+    .line 123
+    :cond_11
     return-void
 .end method
